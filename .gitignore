@@ -2,3 +2,5 @@ linux-sim/
 *.zip
 data*/
 windows-sim/
+*.pickle
+*.p
