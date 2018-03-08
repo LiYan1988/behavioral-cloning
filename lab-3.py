@@ -136,6 +136,6 @@ loss_train_history = model.fit_generator(generator_train,
                     nb_epoch=15,
                     validation_data=generator_validation,
                     nb_val_samples=size_validation)
-
 loss_evaulate = model.evaluate_generator(generator_test,  val_samples=size_test)
+
 model.save('model.h5')
