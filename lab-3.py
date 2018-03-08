@@ -131,9 +131,9 @@ generator_test = data_generator(log_test, batch_size)
 generator_validation = data_generator(log_validation, batch_size)
 
 model.compile(loss='mse', optimizer='adam')
-model.fit_generator(generator_train, 
+loss_train_history = model.fit_generator(generator_train, 
                     samples_per_epoch=size_train,
-                    nb_epoch=10,
+                    nb_epoch=15,
                     validation_data=generator_validation,
                     nb_val_samples=size_validation)
 

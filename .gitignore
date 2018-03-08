@@ -4,3 +4,4 @@ data*/
 windows-sim/
 *.pickle
 *.p
+*.h5
