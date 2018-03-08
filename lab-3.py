@@ -67,9 +67,10 @@ def data_generator(log, batch_size=32):
                     
             x_train = np.array(images)
             y_train = np.array(angles)
-            x_train, y_train = shuffle(x_train, y_train)
+            weights = np.array(weights)
+            x_train, y_train, weights = shuffle(x_train, y_train, weights)
             
-            yield tuple(x_train, y_train, weights)
+            yield tuple([x_train, y_train])
                     
 #%%
 import keras
@@ -83,21 +84,21 @@ model = Sequential()
 model.add(Lambda(lambda x: x / 255 - 0.5, input_shape=(160, 320, 3)))
 model.add(Cropping2D(cropping=((50,20), (0,0))))
 #print('Normol:', model.output.get_shape().as_list())
-model.add(Convolution2D(24, 5, 5, activation='relu'))
+model.add(Convolution2D(24, 5, 5, activation='relu', subsample=(2, 2)))
 model.add(Dropout(0.3))
-model.add(MaxPooling2D((2, 2)))
+#model.add(MaxPooling2D((2, 2)))
 #print('Conv1:', model.output.get_shape().as_list())
-model.add(Convolution2D(36, 5, 5, activation='relu'))
+model.add(Convolution2D(36, 5, 5, activation='relu', subsample=(2, 2)))
 model.add(Dropout(0.3))
-model.add(MaxPooling2D((2, 2)))
+#model.add(MaxPooling2D((2, 2)))
 #print('Conv2:', model.output.get_shape().as_list())
-model.add(Convolution2D(48, 5, 5, activation='relu'))
+model.add(Convolution2D(48, 5, 5, activation='relu', subsample=(2, 2)))
 model.add(Dropout(0.3))
-model.add(MaxPooling2D((2, 2)))
+#model.add(MaxPooling2D((2, 2)))
 #print('Conv3:', model.output.get_shape().as_list())
 model.add(Convolution2D(64, 2, 2, activation='relu'))
 model.add(Dropout(0.3))
-model.add(MaxPooling2D((2, 2)))
+#model.add(MaxPooling2D((2, 2)))
 #print('Conv4:', model.output.get_shape().as_list())
 model.add(Convolution2D(64, 3, 3, activation='relu'))
 #print('Conv5:', model.output.get_shape().as_list())
@@ -124,14 +125,15 @@ log_train = log_shuffled.iloc[:size_train]
 log_test = log_shuffled.iloc[size_train:size_train+size_test]
 log_validation = log_shuffled.iloc[size_train+size_test:]
 
-generator_train = data_generator(log_train, 32)
-generator_test = data_generator(log_test, 32)
-generator_validation = data_generator(log_validation, 32)
+batch_size = 32
+generator_train = data_generator(log_train, batch_size)
+generator_test = data_generator(log_test, batch_size)
+generator_validation = data_generator(log_validation, batch_size)
 
 model.compile(loss='mse', optimizer='adam')
 model.fit_generator(generator_train, 
                     samples_per_epoch=size_train,
-                    nb_epoch=5,
+                    nb_epoch=10,
                     validation_data=generator_validation,
                     nb_val_samples=size_validation)
 
