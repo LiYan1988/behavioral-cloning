@@ -137,5 +137,5 @@ model.fit_generator(generator_train,
                     validation_data=generator_validation,
                     nb_val_samples=size_validation)
 
-model.evaluate_generator(generator_test,  val_samples=size_test)
+loss_evaulate = model.evaluate_generator(generator_test,  val_samples=size_test)
 model.save('model.h5')
