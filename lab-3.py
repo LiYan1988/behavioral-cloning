@@ -54,6 +54,7 @@ def data_generator(log, batch_size=32):
             
             images = []
             angles = []
+            weights = []
             for n in range(batch_size_now):
                 img = read_image(os.path.join('data-all', batch_samples.iloc[n, 0]))
                 if n<n_flip:
@@ -62,11 +63,13 @@ def data_generator(log, batch_size=32):
                 else:
                     images.append(img)
                     angles.append(batch_samples.iloc[n, 1])
+                weights.append(len(os.path.split(batch_samples.iloc[n, 0])))
                     
             x_train = np.array(images)
             y_train = np.array(angles)
+            x_train, y_train = shuffle(x_train, y_train)
             
-            yield tuple(shuffle(x_train, y_train))
+            yield tuple(x_train, y_train, weights)
                     
 #%%
 import keras
@@ -131,4 +134,6 @@ model.fit_generator(generator_train,
                     nb_epoch=5,
                     validation_data=generator_validation,
                     nb_val_samples=size_validation)
+
+model.evaluate_generator(generator_test,  val_samples=size_test)
 model.save('model.h5')
